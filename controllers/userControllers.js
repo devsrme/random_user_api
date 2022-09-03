@@ -1,9 +1,11 @@
 const fs = require("fs");
-let users = JSON.parse(fs.readFileSync("./devData/usersData.json"));
+let users = JSON.parse(
+  fs.readFileSync(`${__dirname}/../devData/usersData.json`)
+);
 
 // get random user
 
-module.exports.getRandomUser = async (req, res) => {
+exports.getRandomUser = async (req, res) => {
   try {
     const random = await Math.floor(Math.random() * users.length);
     const randomUser = users[random];
@@ -24,7 +26,7 @@ module.exports.getRandomUser = async (req, res) => {
 
 // get all users
 
-module.exports.getAllUsers = async (req, res) => {
+exports.getAllUsers = async (req, res) => {
   try {
     const allUsers = await users;
     const limit = req.query.limit;
@@ -51,7 +53,7 @@ module.exports.getAllUsers = async (req, res) => {
 
 // create new user
 
-module.exports.postNewUser = async (req, res) => {
+exports.postNewUser = async (req, res) => {
   try {
     const name = JSON.stringify(req.body.name);
     const gender = JSON.stringify(req.body.gender);
@@ -68,12 +70,16 @@ module.exports.postNewUser = async (req, res) => {
       users.push(newUser);
 
       // save to local json file
-      fs.writeFile("./devData/usersData.json", JSON.stringify(users), (err) => {
-        res.status(201).send({
-          status: "success",
-          user: newUser,
-        });
-      });
+      fs.writeFile(
+        `${__dirname}/../devData/usersData.json`,
+        JSON.stringify(users),
+        (err) => {
+          res.status(201).send({
+            status: "success",
+            user: newUser,
+          });
+        }
+      );
     }
   } catch (err) {
     res.status(400).send({
@@ -85,7 +91,7 @@ module.exports.postNewUser = async (req, res) => {
 
 // update user
 
-module.exports.updateUser = async (req, res) => {
+exports.updateUser = async (req, res) => {
   try {
     const id = req.params.id;
     if (id > users.length) {
@@ -106,14 +112,18 @@ module.exports.updateUser = async (req, res) => {
       res.send(updateUser);
 
       // save to local json file
-      fs.writeFile("./devData/usersData.json", JSON.stringify(users), (err) => {
-        res.status(201).send({
-          status: "success",
-          data: {
-            user: updateUser,
-          },
-        });
-      });
+      fs.writeFile(
+        `${__dirname}/../devData/usersData.json`,
+        JSON.stringify(users),
+        (err) => {
+          res.status(201).send({
+            status: "success",
+            data: {
+              user: updateUser,
+            },
+          });
+        }
+      );
     }
   } catch (error) {
     res.status(400).send({
@@ -125,7 +135,7 @@ module.exports.updateUser = async (req, res) => {
 
 // delete user
 
-module.exports.deleteUser = async (req, res) => {
+exports.deleteUser = async (req, res) => {
   try {
     const id = req.params.id;
     if (id > users.length) {
@@ -137,12 +147,16 @@ module.exports.deleteUser = async (req, res) => {
       users = await users.filter((user) => user.id !== Number(id));
 
       // save to local json file
-      fs.writeFile("./devData/usersData.json", JSON.stringify(users), (err) => {
-        res.status(204).send({
-          status: "success",
-          data: users,
-        });
-      });
+      fs.writeFile(
+        `${__dirname}/../devData/usersData.json`,
+        JSON.stringify(users),
+        (err) => {
+          res.status(204).send({
+            status: "success",
+            data: users,
+          });
+        }
+      );
     }
   } catch (error) {
     res.status(400).send({
@@ -154,7 +168,7 @@ module.exports.deleteUser = async (req, res) => {
 
 // update multiple users
 
-module.exports.updateMultipleUsers = async (req, res) => {
+exports.updateMultipleUsers = async (req, res) => {
   try {
     const multipleUsers = req.body;
     for (let i = 0; i < multipleUsers.length; i++) {
@@ -170,14 +184,18 @@ module.exports.updateMultipleUsers = async (req, res) => {
     }
 
     // save to local json file
-    fs.writeFile("./devData/usersData.json", JSON.stringify(users), (err) => {
-      res.status(201).send({
-        status: "success",
-        data: {
-          user: multipleUsers,
-        },
-      });
-    });
+    fs.writeFile(
+      `${__dirname}/../devData/usersData.json`,
+      JSON.stringify(users),
+      (err) => {
+        res.status(201).send({
+          status: "success",
+          data: {
+            user: multipleUsers,
+          },
+        });
+      }
+    );
   } catch (error) {
     res.status(400).send({
       status: "fail",
