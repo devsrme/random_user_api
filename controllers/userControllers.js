@@ -55,18 +55,33 @@ exports.getAllUsers = async (req, res) => {
 
 exports.postNewUser = async (req, res) => {
   try {
-    const name = JSON.stringify(req.body.name);
-    const gender = JSON.stringify(req.body.gender);
-    const contact = JSON.stringify(req.body.contact);
-    const address = JSON.stringify(req.body.address);
-    const photoUrl = JSON.stringify(req.body.photoUrl);
+    const { name, gender, contact, address, photoUrl } = req.body;
+
+    const arr = [];
+    for (let x in req.body) {
+      arr.push(x);
+    }
+
     if (!name || !gender || !contact || !address || !photoUrl) {
+      res.status(400).send({
+        messege: "Invalid fields name or some fields are missing",
+      });
+    } else if (arr.length > 5) {
       res.status(400).send({
         messege: "Invalid fields name or some fields are missing",
       });
     } else {
       const newId = (await users[users.length - 1].id) + 1;
-      const newUser = await Object.assign({ id: newId }, req.body);
+
+      const newUser = await Object.assign({ id: newId });
+      if (name && gender && contact && address && photoUrl) {
+        newUser.name = name;
+        newUser.gender = gender;
+        newUser.contact = contact;
+        newUser.address = address;
+        newUser.photoUrl = photoUrl;
+      }
+
       users.push(newUser);
 
       // save to local json file
@@ -93,7 +108,7 @@ exports.postNewUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.params.id * 1;
     if (id > users.length) {
       res.status(400).send({
         status: "fail",
@@ -101,7 +116,7 @@ exports.updateUser = async (req, res) => {
       });
     } else {
       const { name, gender, contact, address, photoUrl } = req.body;
-      const updateUser = await users.find((user) => user.id == Number(id));
+      const updateUser = await users.find((user) => user.id == id);
 
       // update fields
       updateUser.name = name;
@@ -137,14 +152,14 @@ exports.updateUser = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.params.id * 1;
     if (id > users.length) {
       res.status(400).send({
         status: "fail",
         messege: "Invalid ID",
       });
     } else {
-      users = await users.filter((user) => user.id !== Number(id));
+      users = await users.filter((user) => user.id !== id);
 
       // save to local json file
       fs.writeFile(
@@ -174,7 +189,12 @@ exports.updateMultipleUsers = async (req, res) => {
     for (let i = 0; i < multipleUsers.length; i++) {
       const index = users.findIndex((user) => user.id === multipleUsers[i].id);
       const user = users[index];
-      if (user) {
+      if (!user) {
+        return res.status(400).send({
+          status: "fail",
+          messege: "can not update users",
+        });
+      } else if (user) {
         for (let property in multipleUsers[i]) {
           if (user[property]) {
             user[property] = multipleUsers[i][property];
