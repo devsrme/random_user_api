@@ -108,31 +108,39 @@ exports.postNewUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const id = req.params.id * 1;
+    const id = req.params.id;
     if (id > users.length) {
-      res.status(400).send({
+      return res.status(400).send({
         status: "fail",
         messege: "Invalid ID",
       });
     } else {
       const { name, gender, contact, address, photoUrl } = req.body;
-      const updateUser = await users.find((user) => user.id == id);
+      const updateUser = await users.find((user) => user.id == Number(id));
 
       // update fields
-      updateUser.name = name;
-      updateUser.gender = gender;
-      updateUser.contact = contact;
-      updateUser.address = address;
-      updateUser.photoUrl = photoUrl;
-      res.send(updateUser);
+      if (name) {
+        updateUser.name = name;
+      }
+      if (gender) {
+        updateUser.gender = gender;
+      }
+      if (contact) {
+        updateUser.contact = contact;
+      }
+      if (address) {
+        updateUser.address = address;
+      }
+      if (photoUrl) {
+        updateUser.photoUrl = photoUrl;
+      }
 
       // save to local json file
       fs.writeFile(
         `${__dirname}/../devData/usersData.json`,
         JSON.stringify(users),
         (err) => {
-          res.status(201).send({
-            status: "success",
+          return res.send({
             data: {
               user: updateUser,
             },
@@ -141,7 +149,7 @@ exports.updateUser = async (req, res) => {
       );
     }
   } catch (error) {
-    res.status(400).send({
+    return res.status(400).send({
       status: "fail",
       messege: "can not update user",
     });

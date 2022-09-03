@@ -86,5 +86,13 @@
     "contact": "+995 645 813 3144",
     "address": "25 Burrows Parkway",
     "photoUrl": "https://www.fakepersongenerator.com/Face/female/female20161024584145844.jpg"
+  },
+  {
+    "id": 12,
+    "name": "Ronny",
+    "gender": "Male",
+    "contact": "+62 964 157 8489",
+    "address": "1237 Ryan Hill",
+    "photoUrl": "https://www.fakepersongenerator.com/Face/male/male10848316562.jpg"
   }
 ]
